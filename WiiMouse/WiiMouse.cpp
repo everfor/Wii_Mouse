@@ -2,20 +2,34 @@
 //
 
 #include "stdafx.h"
-#include <boost/asio/serial_port.hpp> 
-#include <boost/asio.hpp>
-#include <windows.h>
 #include "XimuReceiver.h"
 #include "Quaternion.h"
 #include "EulerAngles.h"
+#include <boost/asio/serial_port.hpp> 
+#include <boost/asio.hpp>
+#include <windows.h>
 
 using namespace boost;
+
+float angleCorrect(float angle) {
+	if (angle > 180.0f) {
+		return angle - 360.0f;
+	}
+
+	if (angle < -180.0f) {
+		return angle + 360.0f;
+	}
+
+	return angle;
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	DWORD command = MOUSEEVENTF_MOVE;
 	DWORD xOffset = 0;
 	DWORD yOffset = 0;
+	float yawDiff = 0.0f;
+	float pitchDiff = 0.0f;
 	
 	QuaternionPacket quaternionPacket;
 	Quaternion quaternion;
@@ -27,7 +41,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	asio::io_service io;
 	asio::serial_port port(io);
 
-	port.open("COM16");
+	port.open("COM12");
 	port.set_option(asio::serial_port_base::baud_rate(115200));
 
 	// Read buffer character
@@ -44,18 +58,21 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (receiver.isQuaternionGetReady()) {
 			++packetCounter;
 			receiver.resetFlags();
-			if (packetCounter > 10) {
+
+			if (packetCounter == 1) {
 				packetCounter = 0;
 				quaternionPacket = receiver.getQuaternion();
-
-				std::cout<<"w: "<<quaternionPacket.getW()<<" x: "<<quaternionPacket.getX()<<std::endl;
 
 				quaternion.update(quaternionPacket.getW(), quaternionPacket.getX(),
 									quaternionPacket.getY(), quaternionPacket.getZ());
 				eulerAngles.update(quaternion);
 
-				xOffset = (DWORD)(eulerAngles.getYaw() - lastEulerAngles.getYaw());
-				yOffset = (DWORD)(eulerAngles.getPitch() - lastEulerAngles.getPitch());
+				yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
+				pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
+
+				xOffset = (DWORD)(yawDiff * 10.0f);
+				yOffset = (DWORD)(pitchDiff * 10.0f);
+
 				lastEulerAngles = eulerAngles;
 
 				mouse_event(command, xOffset, yOffset, 0, 0);
