@@ -81,6 +81,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DigitalIOPacket.h" />
     <ClInclude Include="EulerAngles.h" />
     <ClInclude Include="InertialAndMagPacket.h" />
     <ClInclude Include="Quaternion.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="XimuReceiver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DigitalIOPacket.cpp" />
     <ClCompile Include="EulerAngles.cpp" />
     <ClCompile Include="InertialAndMagPacket.cpp" />
     <ClCompile Include="Quaternion.cpp" />

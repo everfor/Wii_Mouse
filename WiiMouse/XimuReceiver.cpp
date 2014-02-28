@@ -3,6 +3,7 @@
 // Includes
 #include "stdafx.h"
 #include "XimuReceiver.h"
+#include <iostream>
 
 //------------------------------------------------------------------------------
 // Definitions
@@ -89,20 +90,19 @@ typedef enum {
 unsigned char buf[256];
 unsigned char bufIndex = 0;
 
-// Decoded data
-BattAndThermStruct battAndThermStruct = { 0.0f, 0.0f };
-
 // Data ready flags
-bool battAndThermGetReady = false;
 bool inertialAndMagGetReady = false;
 bool quaternionGetReady = false;
+bool digitalGetReady = false;
 
 //------------------------------------------------------------------------------
 // Methods
 
 XimuReceiver::XimuReceiver() {
+	// Decoded Packet
 	QuaternionPacket quaternionPacket;
 	InertialandMagPacket inertialPacket;
+	DigitalIOPacket digitalIOPacket;
 }
 
 ErrorCode XimuReceiver::processNewChar(unsigned char c) {
@@ -154,16 +154,6 @@ ErrorCode XimuReceiver::processNewChar(unsigned char c) {
 
         // Interpret packet according to header
         switch(packet[0]) {
-
-            case PKT_CAL_BATTERY_AND_THERMOMETER_DATA:
-                if(packetSize != LEN_CAL_BATTERY_AND_THERMOMETER_DATA) {
-                    return ERR_INVALID_NUM_BYTES_FOR_PACKET_HEADER;
-                }
-                battAndThermStruct.battery = fixedToFloat(concat(packet[1], packet[2]), Q_CALIBRATED_BATTERY);
-                battAndThermStruct.thermometer = fixedToFloat(concat(packet[3], packet[4]), Q_CALIBRATED_THERMOEMTER);
-                battAndThermGetReady = true;
-                break;
-
             case(PKT_CAL_INERTIAL_AND_MAGNETIC_DATA):
                 if(packetSize != LEN_CAL_INERTIAL_AND_MAGNETIC_DATA) {
                     return ERR_INVALID_NUM_BYTES_FOR_PACKET_HEADER;
@@ -190,6 +180,14 @@ ErrorCode XimuReceiver::processNewChar(unsigned char c) {
 										fixedToFloat(concat(packet[7], packet[8]), Q_QUATERNION));
                 quaternionGetReady = true;
                 break;
+			
+			case(PKT_DIGITAL_IO_DATA):
+				if(packetSize != LEN_DIGITAL_IO_DATA) {
+					return ERR_INVALID_NUM_BYTES_FOR_PACKET_HEADER;
+				}
+				digitalIOPacket.update(packet[1], packet[2]);
+				digitalGetReady = true;
+				break;
 
             default:
                 break;
@@ -206,10 +204,6 @@ unsigned short XimuReceiver::concat(const unsigned char msb, const unsigned char
     return ((unsigned short)msb << 8) | (unsigned short)lsb;
 }
 
-bool XimuReceiver::isBattAndThermGetReady(void) const {
-    return battAndThermGetReady;
-}
-
 bool XimuReceiver::isInertialAndMagGetReady(void) const {
     return inertialAndMagGetReady;
 }
@@ -218,23 +212,23 @@ bool XimuReceiver::isQuaternionGetReady(void) const {
     return quaternionGetReady;
 }
 
-BattAndThermStruct XimuReceiver::getBattAndTherm(void) {
-    battAndThermGetReady = false;
-    return battAndThermStruct;
+bool XimuReceiver::isDigitalGetReady(void) const {
+	return digitalGetReady;
 }
 
-InertialandMagPacket XimuReceiver::getInertialAndMag(void) const {
+InertialandMagPacket XimuReceiver::getInertialAndMag(void) {
+	inertialAndMagGetReady = false;
     return inertialPacket;
 }
 
-QuaternionPacket XimuReceiver::getQuaternion(void) const {
+QuaternionPacket XimuReceiver::getQuaternion(void) {
+	quaternionGetReady = false;
     return quaternionPacket;
 }
 
-void XimuReceiver::resetFlags() {
-	battAndThermGetReady = false;
-	inertialAndMagGetReady = false;
-	quaternionGetReady = false;
+DigitalIOPacket XimuReceiver::getDigitalReading(void) {
+	digitalGetReady = false;
+	return digitalIOPacket;
 }
 
 //------------------------------------------------------------------------------

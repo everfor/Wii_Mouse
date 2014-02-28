@@ -1,9 +1,9 @@
-
 #ifndef XimuReceiver_h
 #define XimuReceiver_h
 
 #include "InertialAndMagPacket.h"
 #include "QuaternionPacket.h"
+#include "DigitalIOPacket.h"
 
 //------------------------------------------------------------------------------
 // Definitions
@@ -35,36 +35,30 @@ typedef enum {
     ERR_UART_TRANSMIT_BUFFER_OVERRUN,
 } ErrorCode;
 
-typedef struct {
-    float battery;      /* battery voltage in V */
-    float thermometer;  /* thermometer in degC  */
-} BattAndThermStruct;
-
 //------------------------------------------------------------------------------
 // Class declaration
 
 class XimuReceiver {
 	QuaternionPacket quaternionPacket;
 	InertialandMagPacket inertialPacket;
+	DigitalIOPacket digitalIOPacket;
 
     public:
         XimuReceiver(void);
         ErrorCode processNewChar(unsigned char c);
-        bool isBattAndThermGetReady(void) const;
         bool isInertialAndMagGetReady(void) const;
         bool isQuaternionGetReady(void) const;
-        BattAndThermStruct getBattAndTherm(void);
-        InertialandMagPacket getInertialAndMag(void) const;
-        QuaternionPacket getQuaternion(void) const;
-		void resetFlags();
+		bool isDigitalGetReady(void) const;
+        InertialandMagPacket getInertialAndMag(void);
+        QuaternionPacket getQuaternion(void);
+		DigitalIOPacket getDigitalReading(void);
 
     private:
         unsigned char buf[256];
         unsigned char bufIndex;
-        BattAndThermStruct battAndThermStruct;
-        bool battAndThermGetReady;
         bool inertialAndMagGetReady;
         bool quaternionGetReady;
+		bool digitalGetReady;
         float fixedToFloat(const short fixed, const unsigned char q) const;
         unsigned short concat(const unsigned char msb, const unsigned char lsb) const;
 };

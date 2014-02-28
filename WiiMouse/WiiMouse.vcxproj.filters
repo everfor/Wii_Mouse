@@ -42,6 +42,9 @@
     <ClInclude Include="Utils.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="DigitalIOPacket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -66,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EulerAngles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DigitalIOPacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -32,16 +32,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	float pitchDiff = 0.0f;
 	
 	QuaternionPacket quaternionPacket;
+	DigitalIOPacket digitalPacket;
 	Quaternion quaternion;
 	EulerAngles eulerAngles;
 	EulerAngles lastEulerAngles;
 	XimuReceiver receiver;
 
+	int digitalPacketCount = -1;
+
 	// Open Serial Port
 	asio::io_service io;
 	asio::serial_port port(io);
 
-	port.open("COM12");
+	port.open("COM16");
 	port.set_option(asio::serial_port_base::baud_rate(115200));
 
 	// Read buffer character
@@ -57,7 +60,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (receiver.isQuaternionGetReady()) {
 			++packetCounter;
-			receiver.resetFlags();
 
 			if (packetCounter == 1) {
 				packetCounter = 0;
@@ -70,12 +72,27 @@ int _tmain(int argc, _TCHAR* argv[])
 				yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
 				pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
 
-				xOffset = (DWORD)(yawDiff * 10.0f);
-				yOffset = (DWORD)(pitchDiff * 10.0f);
+				xOffset = (DWORD)(yawDiff * 15.0f);
+				yOffset = (DWORD)(pitchDiff * 15.0f);
 
 				lastEulerAngles = eulerAngles;
 
 				mouse_event(command, xOffset, yOffset, 0, 0);
+			}
+		}
+
+		if (receiver.isDigitalGetReady()) {
+			digitalPacket = receiver.getDigitalReading();
+
+			if (digitalPacket.getState(0) == 1) {
+				mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+			}
+			if (digitalPacket.getState(0) == 0) {
+				mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+			}
+			if (digitalPacket.getState(2) == 1) {
+				mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+				mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
 			}
 		}
 	}
