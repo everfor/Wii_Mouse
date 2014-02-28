@@ -38,7 +38,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	EulerAngles lastEulerAngles;
 	XimuReceiver receiver;
 
-	int digitalPacketCount = -1;
+	bool leftButtonDown = false;
+	bool rightButtonDown = false;
 
 	// Open Serial Port
 	asio::io_service io;
@@ -86,13 +87,23 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			if (digitalPacket.getState(0) == 1) {
 				mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+				leftButtonDown = true;
 			}
 			if (digitalPacket.getState(0) == 0) {
-				mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+				if (leftButtonDown) {
+					mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+					leftButtonDown = false;
+				}
 			}
 			if (digitalPacket.getState(2) == 1) {
 				mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-				mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+				rightButtonDown = true;
+			}
+			if (digitalPacket.getState(2) == 0) {
+				if (rightButtonDown) {
+					mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+					rightButtonDown = false;
+				}
 			}
 		}
 	}
