@@ -11,8 +11,6 @@ class Quaternion {
 		float getY() const;
 		float getZ() const;
 		void update(float w, float x, float y, float z);
-		// EulerAngles toEulerAngles();
-		// RotationMatrix toRotationMatrix();
 };
 
 #endif

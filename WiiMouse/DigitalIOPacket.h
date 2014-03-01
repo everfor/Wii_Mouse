@@ -10,8 +10,6 @@ class DigitalIOPacket
 		void SetBitsFromByte(int data[8], char byte);
 		int getDirection(int AX) const;
 		int getState(int AX) const;
-	private:
-
 };
 
 #endif

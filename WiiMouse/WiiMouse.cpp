@@ -5,31 +5,22 @@
 #include "XimuReceiver.h"
 #include "Quaternion.h"
 #include "EulerAngles.h"
+#include "Utils.h"
 #include <boost/asio/serial_port.hpp> 
 #include <boost/asio.hpp>
 #include <windows.h>
 
 using namespace boost;
 
-float angleCorrect(float angle) {
-	if (angle > 180.0f) {
-		return angle - 360.0f;
-	}
-
-	if (angle < -180.0f) {
-		return angle + 360.0f;
-	}
-
-	return angle;
-}
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	DWORD command = MOUSEEVENTF_MOVE;
 	DWORD xOffset = 0;
 	DWORD yOffset = 0;
+	DWORD scrollAmount = 0;
 	float yawDiff = 0.0f;
 	float pitchDiff = 0.0f;
+	float rollDiff = 0.0f;
 	
 	QuaternionPacket quaternionPacket;
 	DigitalIOPacket digitalPacket;
@@ -72,13 +63,20 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
 				pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
+				rollDiff = angleCorrect(eulerAngles.getRoll());
 
 				xOffset = (DWORD)(yawDiff * 15.0f);
 				yOffset = (DWORD)(pitchDiff * 15.0f);
 
 				lastEulerAngles = eulerAngles;
 
-				mouse_event(command, xOffset, yOffset, 0, 0);
+				mouse_event(MOUSEEVENTF_MOVE, xOffset, yOffset, scrollAmount, 0);
+
+				if (abs(rollDiff) > 30.0) {
+					scrollAmount = (DWORD)(rollDiff * 1.6f);
+					mouse_event(MOUSEEVENTF_WHEEL, 0, 0, scrollAmount, 0);
+					scrollAmount = 0;
+				}
 			}
 		}
 
@@ -86,8 +84,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			digitalPacket = receiver.getDigitalReading();
 
 			if (digitalPacket.getState(0) == 1) {
-				mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-				leftButtonDown = true;
+				if(!leftButtonDown) {
+					mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+					leftButtonDown = true;
+				}
 			}
 			if (digitalPacket.getState(0) == 0) {
 				if (leftButtonDown) {
@@ -96,8 +96,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 			}
 			if (digitalPacket.getState(2) == 1) {
-				mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-				rightButtonDown = true;
+				if(!rightButtonDown) {
+					mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+					rightButtonDown = true;
+				}
 			}
 			if (digitalPacket.getState(2) == 0) {
 				if (rightButtonDown) {

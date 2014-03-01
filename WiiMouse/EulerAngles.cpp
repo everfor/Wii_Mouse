@@ -15,6 +15,10 @@ EulerAngles::EulerAngles(float pitch, float roll, float yaw) {
 	this->yaw = yaw;
 }
 
+EulerAngles::EulerAngles(Quaternion& quaternion) {
+	this->update(quaternion);
+}
+
 float EulerAngles::getPitch() const {
 	return pitch;
 }

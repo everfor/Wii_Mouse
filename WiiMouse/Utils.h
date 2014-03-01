@@ -2,5 +2,6 @@
 #define Utils_h
 
 float radiansToDegrees(float radians);
+float angleCorrect(float angle);
 
 #endif
