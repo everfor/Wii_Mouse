@@ -63,7 +63,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
 				pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
-				rollDiff = angleCorrect(eulerAngles.getRoll());
+				// Introduce symmetry for right-handed users (lefthanded comming in a bit)
+				// Because right-handed people tend to tilt the mouse right-wards a bit
+				rollDiff = angleCorrect(eulerAngles.getRoll()) - 10.0f;
 
 				xOffset = (DWORD)(yawDiff * 15.0f);
 				yOffset = (DWORD)(pitchDiff * 15.0f);
@@ -72,8 +74,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				mouse_event(MOUSEEVENTF_MOVE, xOffset, yOffset, scrollAmount, 0);
 
-				if (abs(rollDiff) > 30.0) {
-					scrollAmount = (DWORD)(rollDiff * 1.6f);
+				if (abs(rollDiff) > 20.0) {
+					scrollAmount = (DWORD)(rollDiff * -1.6f);
 					mouse_event(MOUSEEVENTF_WHEEL, 0, 0, scrollAmount, 0);
 					scrollAmount = 0;
 				}
