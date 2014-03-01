@@ -1,3 +1,6 @@
+/*
+	Stores the decoded packet for Gyroscope, Accelerometer andMagnetometer readings
+*/
 #ifndef InertialandMagPacket_h
 #define InertialandMagPacket_h
 

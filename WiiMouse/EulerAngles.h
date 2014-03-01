@@ -1,3 +1,6 @@
+/*
+	Euler Angles Object
+*/
 #ifndef EulerAngles_h
 #define EulerAngles_h
 
@@ -12,6 +15,7 @@ class EulerAngles {
 		float getPitch() const;
 		float getRoll() const;
 		float getYaw() const;
+		// Convert a quaternion to euler angles
 		void update(Quaternion& quaternion);
 };
 

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Quaternion.h"
 #include "Utils.h"
-#include <math.h>
 
 Quaternion::Quaternion() {
 	w = 1.0f;

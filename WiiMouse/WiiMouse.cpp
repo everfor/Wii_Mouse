@@ -41,8 +41,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Read buffer character
 	char c;
-	// Count the packets
-	int packetCounter = 0;
 
 	while (true) {
 		// Read 1 character into c, this will block
@@ -50,38 +48,36 @@ int _tmain(int argc, _TCHAR* argv[])
 		asio::read(port, asio::buffer(&c,1));
 		receiver.processNewChar(c);
 
+		// Create mouse events based on different data received
+		// Quaternion gives orientation and is thus for mouse move and scroll
 		if (receiver.isQuaternionGetReady()) {
-			++packetCounter;
+			quaternionPacket = receiver.getQuaternion();
 
-			if (packetCounter == 1) {
-				packetCounter = 0;
-				quaternionPacket = receiver.getQuaternion();
+			quaternion.update(quaternionPacket.getW(), quaternionPacket.getX(),
+								quaternionPacket.getY(), quaternionPacket.getZ());
+			eulerAngles.update(quaternion);
 
-				quaternion.update(quaternionPacket.getW(), quaternionPacket.getX(),
-									quaternionPacket.getY(), quaternionPacket.getZ());
-				eulerAngles.update(quaternion);
+			yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
+			pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
+			// Introduce symmetry for right-handed users (lefthanded comming in a bit)
+			// Because right-handed people tend to tilt the mouse right-wards a bit
+			rollDiff = angleCorrect(eulerAngles.getRoll()) - 10.0f;
 
-				yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
-				pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
-				// Introduce symmetry for right-handed users (lefthanded comming in a bit)
-				// Because right-handed people tend to tilt the mouse right-wards a bit
-				rollDiff = angleCorrect(eulerAngles.getRoll()) - 10.0f;
+			xOffset = (DWORD)(yawDiff * 15.0f);
+			yOffset = (DWORD)(pitchDiff * 15.0f);
 
-				xOffset = (DWORD)(yawDiff * 15.0f);
-				yOffset = (DWORD)(pitchDiff * 15.0f);
+			lastEulerAngles = eulerAngles;
 
-				lastEulerAngles = eulerAngles;
+			mouse_event(MOUSEEVENTF_MOVE, xOffset, yOffset, scrollAmount, 0);
 
-				mouse_event(MOUSEEVENTF_MOVE, xOffset, yOffset, scrollAmount, 0);
-
-				if (abs(rollDiff) > 20.0) {
-					scrollAmount = (DWORD)(rollDiff * -1.6f);
-					mouse_event(MOUSEEVENTF_WHEEL, 0, 0, scrollAmount, 0);
-					scrollAmount = 0;
-				}
+			if (abs(rollDiff) > 20.0) {
+				scrollAmount = (DWORD)(rollDiff * -1.6f);
+				mouse_event(MOUSEEVENTF_WHEEL, 0, 0, scrollAmount, 0);
+				scrollAmount = 0;
 			}
 		}
 
+		// Push buttons are read as digital inputs and used for left/right clicks
 		if (receiver.isDigitalGetReady()) {
 			digitalPacket = receiver.getDigitalReading();
 

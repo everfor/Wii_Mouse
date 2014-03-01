@@ -2,27 +2,27 @@
     CONSOLE APPLICATION : WiiMouse Project Overview
 ========================================================================
 
-AppWizard has created this WiiMouse application for you.
-
 This file contains a summary of what you will find in each of the files that
 make up your WiiMouse application.
 
-
-WiiMouse.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
-
-WiiMouse.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
-
 WiiMouse.cpp
     This is the main application source file.
+
+InertialAndMagPacket.h, InertialAndMagPacket.cpp
+QuaternionPacket.h, QuaternionPacket.cpp
+DigitalIOPacket.h, DigitalIOPacket.cpp
+	Classes to store data from decoded packets from Ximu
+
+Quaternion.h, Quaternion.cpp
+EulerAngles.h, EulerAngles.cpp
+	Classes used to store orientation data. Contains necessary
+	calculations.
+
+XimuReceiver.h, Ximureceiver.cpp
+	Reader class that reads and parses packets from Ximu
+
+Utils.h, Utils.cpp
+	Utility functions
 
 /////////////////////////////////////////////////////////////////////////////
 Other standard files:
@@ -30,11 +30,3 @@ Other standard files:
 StdAfx.h, StdAfx.cpp
     These files are used to build a precompiled header (PCH) file
     named WiiMouse.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////

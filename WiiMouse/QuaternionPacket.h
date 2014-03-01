@@ -1,3 +1,6 @@
+/*
+	Stores the decoded packet for quaternion data from Ximu
+*/
 #ifndef QuaternionPacket_h
 #define QuaternionPacket_h
 
@@ -10,7 +13,6 @@ class QuaternionPacket {
 		float getX(void) const;
 		float getY(void) const;
 		float getZ(void) const;
-		// float* getQuaternion(void);
 };
 
 

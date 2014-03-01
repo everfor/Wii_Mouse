@@ -10,9 +10,6 @@ bool inertialAndMagGetReady = false;
 bool quaternionGetReady = false;
 bool digitalGetReady = false;
 
-//------------------------------------------------------------------------------
-// Methods
-
 XimuReceiver::XimuReceiver() {
 	// Decoded Packet
 	QuaternionPacket quaternionPacket;
@@ -30,7 +27,7 @@ ErrorCode XimuReceiver::processNewChar(unsigned char c) {
 
         // Calculate packet size
         int packetSize = bufIndex - 1 - ((bufIndex - 1) >> 3);
-        bufIndex = 0;   //reset index
+        bufIndex = 0;
 
         // Extract packet (truncate to discard all msb)
         unsigned char packet[256];
