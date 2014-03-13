@@ -16,6 +16,19 @@ EulerAngles::EulerAngles(float pitch, float roll, float yaw) {
 	this->yaw = yaw;
 }
 
+EulerAngles& EulerAngles::operator+(EulerAngles& that) {
+	float thatPitch = that.getPitch(),
+			thatRoll = that.getRoll(),
+			thatYaw = that.getYaw();
+	EulerAngles sum(
+		pitch + thatPitch,
+		roll + thatRoll,
+		yaw + thatYaw
+	);
+
+	return sum;
+}
+
 float EulerAngles::getPitch() const {
 	return pitch;
 }

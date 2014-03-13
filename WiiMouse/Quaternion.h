@@ -11,6 +11,7 @@ class Quaternion {
 	public:
 		Quaternion();
 		Quaternion(float w, float x, float y, float z);
+		Quaternion& operator*(Quaternion& that);
 		float getW() const;
 		float getX() const;
 		float getY() const;

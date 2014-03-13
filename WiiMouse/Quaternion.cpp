@@ -17,6 +17,21 @@ Quaternion::Quaternion(float w, float x, float y, float z) {
 	this->z = z;
 }
 
+Quaternion& Quaternion::operator*(Quaternion& that) {
+	float thatW = that.getW(),
+			thatX = that.getX(),
+			thatY = that.getY(),
+			thatZ = that.getZ();
+	Quaternion product(
+		w * thatW - x * thatX - y * thatY - z * thatZ,
+		w * thatX + x * thatW + y * thatZ - z * thatY,
+		w * thatY - x * thatZ + y * thatW + z * thatX,
+		w * thatZ + x * thatY - y * thatX + z * thatW
+	);
+
+	return product;
+}
+
 float Quaternion::getW() const {
 	return w;
 }
