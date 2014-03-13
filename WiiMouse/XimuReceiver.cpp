@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "XimuReceiver.h"
+#include <iostream>
 
 // Serial stream decoding
 unsigned char buf[256];
@@ -59,10 +60,6 @@ ErrorCode XimuReceiver::processNewChar(unsigned char c) {
         packet[25] = (buf[28] << 5) | (buf[29] >> 2);
         packet[26] = (buf[29] << 6) | (buf[30] >> 1);
         packet[27] = (buf[30] << 7) | (buf[31] >> 0);
-
-        /*
-            TODO: Verify checksum here, if fail then return ERR_INVALID_CHECKSUM;
-        */
 
         // Interpret packet according to header
         switch(packet[0]) {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "EulerAngles.h"
+#include "Quaternion.h"
 #include "Utils.h"
 
 #include<math.h>
@@ -15,10 +16,6 @@ EulerAngles::EulerAngles(float pitch, float roll, float yaw) {
 	this->yaw = yaw;
 }
 
-EulerAngles::EulerAngles(Quaternion& quaternion) {
-	this->update(quaternion);
-}
-
 float EulerAngles::getPitch() const {
 	return pitch;
 }
@@ -31,8 +28,13 @@ float EulerAngles::getYaw() const {
 	return yaw;
 }
 
-void EulerAngles::update(Quaternion& quaternion) {
-	pitch = radiansToDegrees(-atan((2.0f * (quaternion.getX() * quaternion.getZ() + quaternion.getW() * quaternion.getY())) / sqrt(1.0f - pow((2.0f * quaternion.getX() * quaternion.getZ() + 2.0f * quaternion.getW() * quaternion.getY()), 2.0f))));
-	roll = radiansToDegrees(atan2(2.0f * (quaternion.getY() * quaternion.getZ() - quaternion.getW() * quaternion.getX()), 2.0f * quaternion.getW() * quaternion.getW() - 1.0f + 2.0f * quaternion.getZ() * quaternion.getZ()));
-	yaw = radiansToDegrees(atan2(2.0f * (quaternion.getX() * quaternion.getY() - quaternion.getW() * quaternion.getZ()), 2.0f * quaternion.getW() * quaternion.getW() - 1.0f + 2.0f * quaternion.getX() * quaternion.getX()));
+Quaternion& EulerAngles::toQuaternion() {
+	Quaternion quat(
+		cos(roll / 2.0) * cos(pitch / 2.0) * cos(yaw / 2.0) + sin(roll / 2.0) * sin(pitch / 2.0) * sin(yaw / 2.0),
+		sin(roll / 2.0) * cos(pitch / 2.0) * cos(yaw / 2.0) - cos(roll / 2.0) * sin(pitch / 2.0) * sin(yaw / 2.0),
+		cos(roll / 2.0) * sin(pitch / 2.0) * cos(yaw / 2.0) + sin(roll / 2.0) * cos(pitch / 2.0) * sin(yaw / 2.0),
+		cos(roll / 2.0) * cos(pitch / 2.0) * sin(yaw / 2.0) - sin(roll / 2.0) * sin(pitch / 2.0) * cos(yaw / 2.0)
+	);
+
+	return quat;
 }

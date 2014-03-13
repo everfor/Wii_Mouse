@@ -4,6 +4,8 @@
 #ifndef Quaternion_h
 #define Quaternion_h
 
+class EulerAngles;
+
 class Quaternion {
 	float w, x, y, z;
 	public:
@@ -14,6 +16,7 @@ class Quaternion {
 		float getY() const;
 		float getZ() const;
 		void update(float w, float x, float y, float z);
+		EulerAngles& toEulerAngles();
 };
 
 #endif

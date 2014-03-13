@@ -55,7 +55,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			quaternion.update(quaternionPacket.getW(), quaternionPacket.getX(),
 								quaternionPacket.getY(), quaternionPacket.getZ());
-			eulerAngles.update(quaternion);
+			eulerAngles = quaternion.toEulerAngles();
 
 			yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
 			pitchDiff = angleCorrect(eulerAngles.getPitch() - lastEulerAngles.getPitch());
