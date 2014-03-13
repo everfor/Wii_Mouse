@@ -2,6 +2,6 @@ Debug/
 ipch/
 *.opensdf
 *.sdf
-*.suo
+*.v11.suo
 *.vcxproj
 *.filters

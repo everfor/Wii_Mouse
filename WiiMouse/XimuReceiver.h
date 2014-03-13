@@ -1,3 +1,9 @@
+/*
+    XimuReceiver.cpp
+    Original Author: Seb Madgwick
+
+    C++ library for receiving data from the x-IMU.  Modified by Alan Yang for the particular needs of this project
+*/
 #ifndef XimuReceiver_h
 #define XimuReceiver_h
 
