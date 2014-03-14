@@ -12,5 +12,4 @@ TODO List
 ============
 
 * Make a demo video
-* Implement rotation matrix classes and the conversion among rotation matrix, quaternion and euler angles (only quaternion and euler angles available now)
 * Make it general - now it works with X-IMU only. Implement state estimation and Arduino codes to make it work with other IMUs as well

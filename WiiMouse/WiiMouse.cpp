@@ -12,6 +12,9 @@
 
 using namespace boost;
 
+float DPI = 15.0f;
+float SCROLL_SPEED = -1.6f;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	DWORD command = MOUSEEVENTF_MOVE;
@@ -63,15 +66,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			// Because right-handed people tend to tilt the mouse right-wards a bit
 			rollDiff = angleCorrect(eulerAngles.getRoll()) - 10.0f;
 
-			xOffset = (DWORD)(yawDiff * 15.0f);
-			yOffset = (DWORD)(pitchDiff * 15.0f);
+			xOffset = (DWORD)(yawDiff * DPI);
+			yOffset = (DWORD)(pitchDiff * DPI);
 
 			lastEulerAngles = eulerAngles;
 
 			mouse_event(MOUSEEVENTF_MOVE, xOffset, yOffset, scrollAmount, 0);
 
 			if (abs(rollDiff) > 20.0) {
-				scrollAmount = (DWORD)(rollDiff * -1.6f);
+				scrollAmount = (DWORD)(rollDiff * SCROLL_SPEED);
 				mouse_event(MOUSEEVENTF_WHEEL, 0, 0, scrollAmount, 0);
 				scrollAmount = 0;
 			}
