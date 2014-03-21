@@ -11,5 +11,7 @@ Basically, an air mouse using an imu that can be used without a mouse pad (or re
 TODO List
 ============
 
-* Make a demo video
-* Make it general - now it works with X-IMU only. Implement state estimation and Arduino codes to make it work with other IMUs as well
+* KALMAN FILTER
+* Codes for Arduino to get the IMU data
+* Button Pushing data parsing
+* Integration
