@@ -2,10 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "XimuReceiver.h"
 #include "Quaternion.h"
 #include "EulerAngles.h"
 #include "Utils.h"
+#include "ArduinoReceiver.h"
+#include "InertialAndMagnData.h"
+
 #include <boost/asio/serial_port.hpp> 
 #include <boost/asio.hpp>
 #include <windows.h>
@@ -25,12 +27,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	float pitchDiff = 0.0f;
 	float rollDiff = 0.0f;
 	
-	QuaternionPacket quaternionPacket;
-	DigitalIOPacket digitalPacket;
 	Quaternion quaternion;
 	EulerAngles eulerAngles;
 	EulerAngles lastEulerAngles;
-	XimuReceiver receiver;
+	ArduinoReceiver receiver;
+
+	IntertialAndMagnData inertialAndMagnData;
 
 	bool leftButtonDown = false;
 	bool rightButtonDown = false;
@@ -53,11 +55,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		// Create mouse events based on different data received
 		// Quaternion gives orientation and is thus for mouse move and scroll
-		if (receiver.isQuaternionGetReady()) {
-			quaternionPacket = receiver.getQuaternion();
+		if (receiver.inertialAndMagnDataGetReady()) {
+			inertialAndMagnData = receiver.getInertialAndMagnData();
 
-			quaternion.update(quaternionPacket.getW(), quaternionPacket.getX(),
-								quaternionPacket.getY(), quaternionPacket.getZ());
+			// TODO: Kalman Filter
+
+			quaternion.update(0.0, 0.0,
+								0.0, 0.0);
 			eulerAngles = quaternion.toEulerAngles();
 
 			yawDiff = angleCorrect(lastEulerAngles.getYaw() - eulerAngles.getYaw());
@@ -81,7 +85,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 		// Push buttons are read as digital inputs and used for left/right clicks
-		if (receiver.isDigitalGetReady()) {
+		if (receiver.buttonDataGetReady()) {
+			// TODO: Button Data
+			/*
 			digitalPacket = receiver.getDigitalReading();
 
 			if (digitalPacket.getState(0) == 1) {
@@ -108,6 +114,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					rightButtonDown = false;
 				}
 			}
+			*/
 		}
 	}
 
